@@ -2,12 +2,13 @@ import {log, PRIORITY_INFO, PRIORITY_ERROR} from "./log";
 import {inject, fakeAsync} from "@angular/core/testing";
 import {NgZone} from "@angular/core";
 import {PlatformMock} from "../mocks";
+import {Http} from "@angular/http";
 
 describe('Pages: nonamePage', () => {
 
-    it('should test log', fakeAsync(inject([NgZone, PlatformMock], (ngZone, platformMoke) => {
+    it('should test log', fakeAsync(inject([Http, NgZone, PlatformMock], (http, ngZone, platformMoke) => {
 
-        let fifoTrace = new log(platformMoke, (<any> ngZone));
+        let fifoTrace = new log(http, platformMoke, (<any> ngZone));
         expect(fifoTrace.incMessage('')).toEqual('(1)');
         expect(fifoTrace.incMessage('toto')).toEqual('toto(1)');
         expect(fifoTrace.incMessage('toto(1)')).toEqual('toto(2)');

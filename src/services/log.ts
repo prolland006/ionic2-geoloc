@@ -3,6 +3,8 @@ import {Injectable, NgZone} from "@angular/core";
 import {logMessage} from "./log-message";
 import { File } from 'ionic-native';
 import {Platform} from "ionic-angular";
+import {Http, Headers} from "@angular/http";
+import 'rxjs/add/operator/toPromise';
 
 export const PRIORITY_INFO = 1;
 export const PRIORITY_ERROR = 2;
@@ -11,13 +13,15 @@ const MAXSIZE = 20;
 
 declare var cordova: any;
 const WRITE_LOG = false;
+const POST_LOG = true;
+const POST_URL = "http://192.168.0.11:3000";
 
 @Injectable()
 export class log {
 
   public fifoTrace: logMessage[];
 
-  constructor(private platform: Platform, public zone: NgZone) {
+  constructor(private http: Http, private platform: Platform, public zone: NgZone) {
     this.fifoTrace = new Array(MAXSIZE);
     this.fifoTrace.fill(new logMessage({classe: '', method: '', level: PRIORITY_INFO, message: '' }));
   }
@@ -49,9 +53,29 @@ export class log {
             this.write(logMsg);
           });
         }
+        if (POST_LOG) {
+            this.postLog(logMsg);
+        }
       }
     });
     console.log(msg.message);
+  }
+
+  postLog(logMsg:logMessage) {
+      let headers = new Headers();
+      headers.append('Content-Type', 'application/json');
+
+      this.http.post(`${POST_URL}/log/add`, JSON.stringify(logMsg), {headers})
+        .toPromise() // Promise<Response>
+        // Response{_body: '', status: 200, ok: true, statusText: null, headers: null, type: null, url: null}
+        .then((response) => {
+          if (response.status !== 201) {
+              this.error('log','postLog',`error response: ${response.status}`);
+          }
+        })
+        .catch(error => {
+          this.error('log','postLog',error.message)
+        });
   }
 
   info(message: string) {

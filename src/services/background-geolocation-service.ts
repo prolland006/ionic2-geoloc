@@ -1,6 +1,6 @@
 import {Injectable } from "@angular/core";
 import { log } from "./log";
-import { BackgroundGeolocation, BackgroundMode, Geolocation, Geoposition} from 'ionic-native';
+import { BackgroundGeolocation, Geolocation, Geoposition} from 'ionic-native';
 import Timer = NodeJS.Timer;
 import { Platform, Events} from "ionic-angular";
 import { Observable} from "rxjs";
@@ -110,9 +110,6 @@ export class BackgroundGeolocationService {
         this.backgroundConfigureAndStart();
         this.backgroundWatchLocationMode();
         this.backgroundIsLocationEnabled();
-        BackgroundMode.setDefaults({ text:'Doing geoloc tasks.'});
-        BackgroundMode.enable();
-        this.backGroundOnActivate();
     }
 
     backgroundWatchLocationMode() {
@@ -167,45 +164,6 @@ export class BackgroundGeolocationService {
                     this.trace.info('backgroundIsLocationEnabled disabled');
                 }
             });
-    }
-
-    backGroundOnActivate() {
-        // Called when background mode has been activated
-        BackgroundMode.onactivate = () => {
-            return new Observable(observer=>{
-                setTimeout(function () {
-                    // Modify the currently displayed notification
-                    observer.next('one');
-                    BackgroundMode.configure({
-                        text:'background for more than 1s now.'
-                    });
-                }, 1000);
-
-                setTimeout(function () {
-                    // Modify the currently displayed notification
-                    observer.next('two');
-                    BackgroundMode.configure({
-                        text:'background for more than 5s now.'
-                    });
-                }, 5000);
-
-                setTimeout(function () {
-                    // Modify the currently displayed notification
-                    observer.complete();
-                    BackgroundMode.configure({
-                        text:' background for more than 10s.'
-                    });
-                }, 10000);
-
-            });
-        };
-
-        BackgroundMode.onactivate().subscribe(
-            value => this.trace.info(`onactivate value:${value}`),
-            error => this.trace.error('BackgroundGeolocationService','backGroundOnActivate',`error:${error}`),
-            () => this.trace.info(`finished`)
-        );
-
     }
 
     setCurrentLocation(location: {latitude:string, longitude:string}) {

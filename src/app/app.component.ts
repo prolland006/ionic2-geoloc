@@ -2,8 +2,6 @@ import { Component, ViewChild } from '@angular/core';
 import { Platform, MenuController, Nav } from 'ionic-angular';
 import { environment } from '../environments/environment';
 import { nonamePage } from "../pages/noname-page/noname-page";
-import { BackgroundGeolocation } from 'ionic-native';
-import { LogPage } from "../pages/log-page/log-page";
 
 @Component({
   templateUrl: 'app.html',
