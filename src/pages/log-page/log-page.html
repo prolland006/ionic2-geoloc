@@ -1,0 +1,17 @@
+<ion-header>
+  <ion-navbar>
+    <button ion-button menuToggle>
+      <ion-icon name="menu"></ion-icon>
+    </button>
+    <ion-title>{{title}}</ion-title>
+  </ion-navbar>
+</ion-header>
+
+
+<ion-content padding>
+
+    <span *ngFor="let message of this.fifoTrace">
+      {{ message.timestamp.getHours() }}:{{ message.timestamp.getMinutes() }} {{ message.message }}<br>
+    </span>
+
+</ion-content>
