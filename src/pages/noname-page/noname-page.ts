@@ -82,16 +82,14 @@ export class nonamePage {
       return;
     }
 
-    this.zone.run(() => {
-      this.latitude = location.latitude;
-      this.longitude = location.longitude;
+    this.latitude = location.latitude;
+    this.longitude = location.longitude;
 
-      if(this.connectivityService.isOnline()) {
-        this.initMap(location, '#00FF00');
-      } else {
-        this.trace.info(`your mobile is offline`);
-      }
-    });
+    if(this.connectivityService.isOnline()) {
+      this.initMap(location, '#00FF00');
+    } else {
+      this.trace.info(`your mobile is offline`);
+    }
 
   }
 

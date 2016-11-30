@@ -28,7 +28,6 @@ export class MyApp {
     // set our app's pages
     this.pages = [
       { title: 'map', component: nonamePage },
-      { title: 'log', component: LogPage },
     ];
   }
 

@@ -12,7 +12,7 @@ describe('MyApp', () => {
   });
 
   it('initialises with two possible pages', () => {
-    expect(myApp['pages'].length).toEqual(2);
+    expect(myApp['pages'].length).toEqual(1);
   });
 
   it('initialises with a root page', () => {

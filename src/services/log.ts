@@ -10,6 +10,7 @@ export const PRIORITY_ERROR = 2;
 const MAXSIZE = 20;
 
 declare var cordova: any;
+const WRITE_LOG = false;
 
 @Injectable()
 export class log {
@@ -43,7 +44,7 @@ export class log {
         let logMsg = new logMessage(msg);
         this.fifoTrace.shift();
         this.fifoTrace.push(logMsg);
-        if (this.platform.is('android')) {
+        if (WRITE_LOG && this.platform.is('android')) {
           this.platform.ready().then(() => {
             this.write(logMsg);
           });
