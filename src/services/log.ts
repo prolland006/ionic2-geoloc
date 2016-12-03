@@ -12,9 +12,14 @@ export const PRIORITY_ERROR = 2;
 const MAXSIZE = 20;
 
 declare var cordova: any;
+
+// parameters
 const WRITE_LOG = false;
-const POST_LOG = true;
-const POST_URL = "http://192.168.0.11:3000";
+const POST_LOG = false;
+const POST_URL = "https://log-webservice.herokuapp.com";
+//const POST_URL = "http://192.168.0.11:3000";
+//const POST_URL = "http://127.0.0.1:3000";
+
 
 @Injectable()
 export class log {
