@@ -4,13 +4,23 @@ import { BackgroundGeolocation, Geolocation, Geoposition} from 'ionic-native';
 import Timer = NodeJS.Timer;
 import { Platform, Events} from "ionic-angular";
 import { Observable} from "rxjs";
+import {Http, Headers} from "@angular/http";
+
+//parameters
+const REFRESH_LOCATION_TIMER = 2000; //get geolocations every .. milliseconds
+const POST_GEOLOCATION_TIMER = 5000; //send geolocation to server every .. milliseconds
+const POST_URL = "https://log-webservice.herokuapp.com";
+//const POST_URL = "http://192.168.0.11:3000";
+//const POST_URL = "http://127.0.0.1:3000";
 
 @Injectable()
 export class BackgroundGeolocationService {
 
     trackerInterval: Timer;
+    postGeolocInterval: Timer;
     locations: any;
     public watch: any;
+    currentLocation: {latitude:string, longitude:string, timestamp?: Date};
 
     // BackgroundGeolocation is highly configurable. See platform specific configuration options
     backGroundConfig = {
@@ -33,7 +43,7 @@ export class BackgroundGeolocationService {
         timeout: 2000
     };
 
-    constructor(private platform: Platform, public trace: log, private events: Events) {
+    constructor(private http: Http, private platform: Platform, public trace: log, private events: Events) {
 
         if (this.platform.is('android')) {
             this.platform.ready().then(() => {
@@ -68,8 +78,12 @@ export class BackgroundGeolocationService {
 
                 this.setCurrentLocation(location);
                 this.trackerInterval = setInterval(() => {
-                    this.refreshLocations();
-                }, 2000);
+                    this.eventRefreshLocations();
+                }, REFRESH_LOCATION_TIMER);
+
+                this.postGeolocInterval = setInterval(() => {
+                    this.eventPostGeoloc();
+                }, POST_GEOLOCATION_TIMER);
 
                 // IMPORTANT:  You must execute the finish method here to inform the native plugin that you're finished,
                 // and the background-task may be completed.  You must do this regardless if your HTTP request is successful or not.
@@ -81,13 +95,30 @@ export class BackgroundGeolocationService {
             }, this.backGroundConfig);
     }
 
+    eventPostGeoloc() {
+        let headers = new Headers();
+        headers.append('Content-Type', 'application/json');
 
-    refreshLocations(): void {
+        this.http.post(`${POST_URL}/log/add`, JSON.stringify(this.currentLocation), {headers})
+            .toPromise() // Promise<Response>
+            // Response{_body: '', status: 200, ok: true, statusText: null, headers: null, type: null, url: null}
+            .then((response) => {
+                if (response.status !== 201) {
+                    this.trace.error('log','postLog',`error response: ${response.status}`);
+                }
+            })
+            .catch(error => {
+                this.trace.error('log','postLog',error.message)
+            });
+    }
+
+
+    eventRefreshLocations(): void {
         BackgroundGeolocation.getLocations().then(locations => {
             this.locations = locations;
             if (locations.length != 0) {
                 this.trace.info(`lngth ${locations.length}`);
-                this.setCurrentLocation(locations[locations.length-1]);
+                //this.setCurrentLocation(locations[locations.length-1]);
             }
         }).catch(error => {
             this.trace.error('BackgroundGeolocationService','refreshLocations', `error:${error.toString()}`);
@@ -97,6 +128,7 @@ export class BackgroundGeolocationService {
         Geolocation.getCurrentPosition(this.foreGroundOptions)
             .then((position: Geoposition) => {
                 this.trace.info(`Foregrnd current ${position.coords.latitude},${position.coords.longitude}`);
+                this.setCurrentLocation({latitude:position.coords.latitude.toString(), longitude:position.coords.longitude.toString()});
             }).catch((error)=>{
                 if ((error.code == undefined) || (error.code != 3)) { //3=timeout
                     this.trace.error('BackgroundGeolocationService', 'refreshLocations', `error Foregrnd.getCurrentPos:${error.toString()}`);
@@ -167,6 +199,8 @@ export class BackgroundGeolocationService {
     }
 
     setCurrentLocation(location: {latitude:string, longitude:string}) {
+        this.currentLocation = location;
+        this.currentLocation.timestamp = new Date();
         this.events.publish('BackgroundGeolocationService:setCurrentLocation', location);
     }
 
