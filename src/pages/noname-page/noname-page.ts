@@ -33,6 +33,9 @@ export class nonamePage {
 
     renderer.listenGlobal('document', 'online', (event) => {
       this.trace.info('you are online');
+      if ((this.map == null) && (this.latitude != '')) { //same location but we init the map
+        this.initMap({latitude : this.latitude, longitude: this.longitude}, '#00FF00');
+      }
     });
 
     renderer.listenGlobal('document', 'offline', (event) => {
@@ -51,12 +54,16 @@ export class nonamePage {
   }
 
   initMap(location: {latitude:string, longitude:string}, color: string) {
+    if (google == null) {
+      this.trace.info(`initMap google null`);
+      return;
+    }
     this.trace.info(`initMap  ${location.latitude},${location.longitude}`);
     let latLng = new google.maps.LatLng(location.latitude, location.longitude);
 
     let mapOptions = {
       center: latLng,
-      zoom: 15,
+      zoom: 16,
       mapTypeId: google.maps.MapTypeId.ROADMAP
     }
     if (this.map == null) {
@@ -79,6 +86,9 @@ export class nonamePage {
     this.trace.info(`${location.latitude},${location.longitude},${location.provider}`);
 
     if ((this.latitude == location.latitude) && (this.longitude == location.longitude)) {
+      if (this.connectivityService.isOnline() && (this.map == null)) { //same location but we init the map
+        this.initMap(location, '#00FF00');
+      }
       return;
     }
 
@@ -87,8 +97,6 @@ export class nonamePage {
 
     if(this.connectivityService.isOnline()) {
       this.initMap(location, '#00FF00');
-    } else {
-      this.trace.info(`your mobile is offline`);
     }
 
   }
@@ -111,13 +119,13 @@ export class nonamePage {
 
     let marker = new google.maps.Circle({
       strokeColor: color,
-      strokeOpacity: 0.8,
-      strokeWeight: 2,
+      strokeOpacity: 1,
+      strokeWeight: 1,
       fillColor: color,
-      fillOpacity: 0.35,
+      fillOpacity: 1,
       map: this.map,
       center: latLng,
-      radius: 10
+      radius: 7
     });
 
     this.addInfoWindow(marker, `<h4>${this.markerNb++}</h4>`);

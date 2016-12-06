@@ -5,6 +5,7 @@ import Timer = NodeJS.Timer;
 import { Platform, Events} from "ionic-angular";
 import { Observable} from "rxjs";
 import {Http, Headers} from "@angular/http";
+import {ConnectivityService} from "./connectivity-service";
 
 //parameters
 const REFRESH_LOCATION_TIMER = 2000; //get geolocations every .. milliseconds
@@ -25,13 +26,12 @@ export class BackgroundGeolocationService {
     // BackgroundGeolocation is highly configurable. See platform specific configuration options
     backGroundConfig = {
         interval: 1000,
-        locationTimeout: 500,
         desiredAccuracy: 10,
         stationaryRadius: 20,
         distanceFilter: 30,
         debug: true, //  enable this hear sounds for background-geolocation life-cycle.
         stopOnTerminate: false, // enable this to clear background location settings when the app terminates
-        maxLocations: 100, //default = 10000
+        maxLocations: 20, //default = 10000
     };
 
 
@@ -43,7 +43,8 @@ export class BackgroundGeolocationService {
         timeout: 2000
     };
 
-    constructor(private http: Http, private platform: Platform, public trace: log, private events: Events) {
+    constructor(private http: Http, private platform: Platform, public trace: log, private events: Events,
+                public connectivityService: ConnectivityService) {
 
         if (this.platform.is('android')) {
             this.platform.ready().then(() => {
@@ -82,7 +83,9 @@ export class BackgroundGeolocationService {
                 }, REFRESH_LOCATION_TIMER);
 
                 this.postGeolocInterval = setInterval(() => {
-                    this.eventPostGeoloc();
+                    if(this.connectivityService.isOnline()) {
+                        this.eventPostGeoloc();
+                    }
                 }, POST_GEOLOCATION_TIMER);
 
                 // IMPORTANT:  You must execute the finish method here to inform the native plugin that you're finished,
@@ -108,7 +111,7 @@ export class BackgroundGeolocationService {
                 }
             })
             .catch(error => {
-                this.trace.error('log','postLog',error.message)
+                this.trace.error('log','postLog',`err post log:${error}`);
             });
     }
 
@@ -187,7 +190,7 @@ export class BackgroundGeolocationService {
                             if (error.code === 2) {
                                 //'Not authorized for location updates
                             } else {
-                                this.trace.error('BackgroundGeolocationService','backgroundIsLocationEnabled','Start failed: ' + error.message);
+                                this.trace.error('BackgroundGeolocationService','backgroundIsLocationEnabled',`Start failed: ${error}`);
                             }
                         }
                         );
