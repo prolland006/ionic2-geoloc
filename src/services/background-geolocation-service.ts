@@ -1,6 +1,6 @@
 import {Injectable } from "@angular/core";
 import { log } from "./log";
-import { BackgroundGeolocation, Geolocation, Geoposition} from 'ionic-native';
+import { BackgroundGeolocation } from 'ionic-native';
 import Timer = NodeJS.Timer;
 import { Platform, Events} from "ionic-angular";
 import { Observable} from "rxjs";
@@ -27,20 +27,12 @@ export class BackgroundGeolocationService {
     backGroundConfig = {
         interval: 1000,
         desiredAccuracy: 10,
+        locationTimeout: 500,
         stationaryRadius: 20,
         distanceFilter: 30,
         debug: true, //  enable this hear sounds for background-geolocation life-cycle.
         stopOnTerminate: false, // enable this to clear background location settings when the app terminates
         maxLocations: 20, //default = 10000
-    };
-
-
-    // Foreground Tracking
-    foreGroundOptions = {
-        frequency: 2000,
-        enableHighAccuracy: true,
-        maximumAge: Infinity,
-        timeout: 2000
     };
 
     constructor(private http: Http, private platform: Platform, public trace: log, private events: Events,
@@ -57,19 +49,6 @@ export class BackgroundGeolocationService {
         }
     }
 
-    foreGroundWatchPosition() {
-        this.watch = Geolocation.watchPosition(this.foreGroundOptions)
-            .subscribe((position: any) => {
-                    if (position.code === undefined) {
-                        this.events.publish('BackgroundGeolocationService:setCurrentForegroundLocation', position);
-                    } else {
-                        this.trace.error('BackgroundGeolocationService','constructor',position.message);
-                    }
-                },
-                (error)=>{this.trace.error('BackgroundGeolocationService','foreGroundWatchPosition',error)},
-                ()=>this.trace.info('watchPosition success'));
-
-    }
 
     backgroundConfigureAndStart() {
         this.trace.info(`Background tracking` );
@@ -120,35 +99,21 @@ export class BackgroundGeolocationService {
         BackgroundGeolocation.getLocations().then(locations => {
             this.locations = locations;
             if (locations.length != 0) {
-                this.trace.info(`lngth ${locations.length}`);
-                //this.setCurrentLocation(locations[locations.length-1]);
+                this.setCurrentLocation(locations[locations.length-1]);
             }
         }).catch(error => {
             this.trace.error('BackgroundGeolocationService','refreshLocations', `error:${error.toString()}`);
         });
 
-        // Foreground Tracking
-        Geolocation.getCurrentPosition(this.foreGroundOptions)
-            .then((position: Geoposition) => {
-                this.trace.info(`Foregrnd current ${position.coords.latitude},${position.coords.longitude}`);
-                this.setCurrentLocation({latitude:position.coords.latitude.toString(), longitude:position.coords.longitude.toString()});
-            }).catch((error)=>{
-                if ((error.code == undefined) || (error.code != 3)) { //3=timeout
-                    this.trace.error('BackgroundGeolocationService', 'refreshLocations', `error Foregrnd.getCurrentPos:${error.toString()}`);
-                }
-            });
     }
 
     startTracking(): void {
-        this.trace.info('startTracker');
-        this.foreGroundWatchPosition();
         this.backgroundConfigureAndStart();
         this.backgroundWatchLocationMode();
         this.backgroundIsLocationEnabled();
     }
 
     backgroundWatchLocationMode() {
-        this.trace.info('backgroundWatchLocationMode');
         BackgroundGeolocation.watchLocationMode()
             .then((enabled)=>{
                 if (enabled) {
@@ -169,7 +134,6 @@ export class BackgroundGeolocationService {
     }
 
     backgroundIsLocationEnabled() {
-        this.trace.info('backgroundIsLocationEnabled');
         BackgroundGeolocation.isLocationEnabled()
             .then((enabled)=> {
                 if (enabled) {

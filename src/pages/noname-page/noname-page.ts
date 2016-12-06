@@ -4,7 +4,7 @@ import {Component, Renderer, NgZone} from '@angular/core';
 import {Platform, NavController, Events} from "ionic-angular/index";
 import { ViewChild, ElementRef } from '@angular/core';
 import Timer = NodeJS.Timer;
-import {log, PRIORITY_INFO, PRIORITY_ERROR} from "../../services/log";
+import {log } from "../../services/log";
 import {ConnectivityService} from "../../services/connectivity-service";
 import {BackgroundGeolocationService} from "../../services/background-geolocation-service";
 
@@ -46,24 +46,19 @@ export class nonamePage {
       this.setCurrentLocation(location[0]);
     });
 
-    events.subscribe('BackgroundGeolocationService:setCurrentForegroundLocation', (location) => {
-      this.setCurrentForegroundLocation(location[0]);
-    });
-
-
   }
 
   initMap(location: {latitude:string, longitude:string}, color: string) {
+    this.trace.info(`initMap  ${location.latitude},${location.longitude}`);
     if (google == null) {
       this.trace.info(`initMap google null`);
       return;
     }
-    this.trace.info(`initMap  ${location.latitude},${location.longitude}`);
     let latLng = new google.maps.LatLng(location.latitude, location.longitude);
 
     let mapOptions = {
       center: latLng,
-      zoom: 16,
+      zoom: 15,
       mapTypeId: google.maps.MapTypeId.ROADMAP
     }
     if (this.map == null) {
@@ -101,11 +96,6 @@ export class nonamePage {
 
   }
 
-  setCurrentForegroundLocation(position: any) {
-    this.trace.info(`foregrnd evnt ${position.coords.latitude},${position.coords.longitude},${position.coords.provider}`);
-    this.initMap({latitude:position.coords.latitude, longitude:position.coords.longitude}, '#0000FF');
-  }
-
   addMarker(location: {latitude:string, longitude:string}, color: string){
     if (this.map == null)return;
 
@@ -141,15 +131,4 @@ export class nonamePage {
       infoWindow.open(this.map, marker);
     });
   }
-
-   /*
-   * set the media URL switch the platform
-   */
-  getMediaURL(mediaPath) {
-    if (this.platform.is('android')) {
-      return "/android_asset/www/assets/" + mediaPath;
-    }
-    return "../../assets/" + mediaPath;
-  }
-
 }
