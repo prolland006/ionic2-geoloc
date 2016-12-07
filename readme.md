@@ -14,7 +14,6 @@ Find the GPS position where you are and put every 2 seconds a marker on google m
 - ionic platform add android --save
 - ionic build android --release
 - import platform directory in android studio
-- cordova plugin add cordova-plugin-media
 - ionic emulate android
 - ionic run android --list
 - ionic run android --device

@@ -78,8 +78,6 @@ export class nonamePage {
   }
 
   setCurrentLocation(location: {latitude:string, longitude:string, provider: string}) {
-    this.trace.info(`${location.latitude},${location.longitude},${location.provider}`);
-
     if ((this.latitude == location.latitude) && (this.longitude == location.longitude)) {
       if (this.connectivityService.isOnline() && (this.map == null)) { //same location but we init the map
         this.initMap(location, '#00FF00');
