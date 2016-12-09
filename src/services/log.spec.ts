@@ -6,9 +6,9 @@ import {Http} from "@angular/http";
 
 describe('Pages: nonamePage', () => {
 
-    it('should test log', fakeAsync(inject([Http, NgZone, PlatformMock], (http, ngZone, platformMoke) => {
+    it('should test log', fakeAsync(inject([NgZone], (ngZone) => {
 
-        let fifoTrace = new log(http, platformMoke, (<any> ngZone));
+        let fifoTrace = new log(null, (<any> new PlatformMock), (<any> ngZone));
         expect(fifoTrace.incMessage('')).toEqual('(1)');
         expect(fifoTrace.incMessage('toto')).toEqual('toto(1)');
         expect(fifoTrace.incMessage('toto(1)')).toEqual('toto(2)');
@@ -28,9 +28,28 @@ describe('Pages: nonamePage', () => {
         expect(fifoTrace.fifoTrace.length).toEqual(20);
         expect(fifoTrace.fifoTrace[19].message).toEqual('error');
         expect(fifoTrace.fifoTrace[19].level).toEqual(PRIORITY_ERROR);
-        expect(fifoTrace.fifoTrace[19].classe).toEqual('log');
+        expect(fifoTrace.fifoTrace[19].classe).toEqual('fifoTrace');
         expect(fifoTrace.fifoTrace[19].method).toEqual('method');
     })));
+
+    it('should test some stuffs', () => {
+        let markerList: any[];
+        markerList = new Array(20);
+        expect(markerList.length).toEqual(20);
+        expect(markerList[0]).toEqual(undefined);
+        let removedThing = markerList.shift();
+        expect(markerList.length).toEqual(19);
+        expect(removedThing).toEqual(undefined);
+        markerList.push({stuff: 'gogo'});
+        expect(markerList.length).toEqual(20);
+        expect(markerList[markerList.length-1]).toEqual({stuff: 'gogo'});
+        markerList.shift();
+        expect(markerList.length).toEqual(19);
+        markerList.push({stuff: 'gugus'});
+        expect(markerList.length).toEqual(20);
+        expect(markerList[markerList.length-2]).toEqual({stuff: 'gogo'});
+        expect(markerList[markerList.length-1]).toEqual({stuff: 'gugus'});
+    });
 
 });
 

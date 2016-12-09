@@ -19,7 +19,6 @@ export class BackgroundGeolocationService {
 
     trackerInterval: Timer;
     postGeolocInterval: Timer;
-    locations: any;
     public watch: any;
     currentLocation: {latitude:string, longitude:string, timestamp?: Date};
 
