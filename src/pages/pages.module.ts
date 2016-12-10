@@ -3,7 +3,7 @@ import { IonicModule } from 'ionic-angular';
 import { nonamePage } from "./noname-page/noname-page";
 import {log} from "../services/log";
 import {ConnectivityService} from "../services/connectivity-service";
-import {BackgroundGeolocationService} from "../services/background-geolocation-service";
+import {GeolocationService} from "../services/geolocation-service";
 
 @NgModule({
   declarations: [
@@ -14,7 +14,7 @@ import {BackgroundGeolocationService} from "../services/background-geolocation-s
     nonamePage
   ],
   entryComponents: [ ],
-  providers: [ BackgroundGeolocationService, log, ConnectivityService ],
+  providers: [ GeolocationService, log, ConnectivityService ],
 })
 
 export class PagesModule {}

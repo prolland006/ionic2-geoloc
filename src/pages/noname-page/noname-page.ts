@@ -6,7 +6,7 @@ import { ViewChild, ElementRef } from '@angular/core';
 import Timer = NodeJS.Timer;
 import {log } from "../../services/log";
 import {ConnectivityService} from "../../services/connectivity-service";
-import {BackgroundGeolocationService} from "../../services/background-geolocation-service";
+import {GeolocationService} from "../../services/geolocation-service";
 
 declare let google;
 
@@ -29,7 +29,7 @@ export class nonamePage {
 
   constructor(public navCtrl: NavController, private platform: Platform, public trace: log,
               public connectivityService: ConnectivityService, events: Events, renderer: Renderer,
-              public backgroundGeolocationService:BackgroundGeolocationService, public zone: NgZone) {
+              public GeolocationService:GeolocationService, public zone: NgZone) {
 
     this.trace.info('create nonamePage');
     this.markerList = new Array(MAX_NB_MARKER);
@@ -45,7 +45,7 @@ export class nonamePage {
       this.trace.info('you are offline');
     });
 
-    events.subscribe('BackgroundGeolocationService:setCurrentLocation', (location) => {
+    events.subscribe('GeolocationService:setCurrentLocation', (location) => {
       this.setCurrentLocation(location[0]);
     });
 

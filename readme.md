@@ -1,6 +1,7 @@
 ﻿# Ionic2-geoloc
 ## Summary
 Find the GPS position where you are and put every 2 seconds a marker on google map. Everything is logged. The position is sent to log-webservice(see my sources on github) on Heroku.
+![geoloc](http://patricerolland.free.fr/pic/ionic_geoloc.jpg)
 
 ## Setup
 - npm i
@@ -9,7 +10,6 @@ Find the GPS position where you are and put every 2 seconds a marker on google m
 ## Android
 - install android studio and install an android emulator
 - cordova plugin add cordova-plugin-crosswalk-webview
-- ionic plugin add cordova-plugin-mauron85-background-geolocation
 - ionic plugin add cordova-plugin-file --save
 - ionic platform add android --save
 - ionic build android --release
