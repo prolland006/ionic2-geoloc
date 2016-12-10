@@ -24,14 +24,14 @@ export class BackgroundGeolocationService {
 
     // BackgroundGeolocation is highly configurable. See platform specific configuration options
     backGroundConfig = {
-        interval: 1000,
-        desiredAccuracy: 10,
-        locationTimeout: 500,
-        stationaryRadius: 20,
-        distanceFilter: 30,
+        interval: 2000,
+        desiredAccuracy: 5,
+        locationTimeout: 2000,
+        stationaryRadius: 10,
+        distanceFilter: 10,
         debug: true, //  enable this hear sounds for background-geolocation life-cycle.
-        stopOnTerminate: false, // enable this to clear background location settings when the app terminates
-        maxLocations: 20, //default = 10000
+        stopOnTerminate: true, // enable this to clear background location settings when the app terminates
+        maxLocations: 5, //default = 10000
     };
 
 
@@ -39,7 +39,7 @@ export class BackgroundGeolocationService {
     foreGroundOptions = {
         frequency: 2000,
         enableHighAccuracy: true,
-        maximumAge: Infinity,
+        maximumAge: 5000,
         timeout: 2000
     };
 

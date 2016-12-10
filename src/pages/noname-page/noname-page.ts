@@ -7,11 +7,10 @@ import Timer = NodeJS.Timer;
 import {log } from "../../services/log";
 import {ConnectivityService} from "../../services/connectivity-service";
 import {BackgroundGeolocationService} from "../../services/background-geolocation-service";
-import {removeErrorMarkup} from "tslint/lib/test/parse";
 
 declare let google;
 
-const MAX_NB_MARKER = 20;
+const MAX_NB_MARKER = 100;
 
 @Component({
   selector: 'noname-page',
@@ -58,7 +57,7 @@ export class nonamePage {
       removedMarker.setMap(null);
     }
     if (this.markerList[this.markerList.length-1] != undefined) {
-      this.markerList[this.markerList.length-1].setColor('#00FF00');
+      this.markerList[this.markerList.length-1].setOptions({fillColor: '#00FF00', strokeColor: '#00FF00'});
     }
     this.markerList.push(marker);
   }
