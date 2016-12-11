@@ -20,7 +20,7 @@ export class GeolocationService {
     trackerInterval: Timer;
     postGeolocInterval: Timer;
     public watch: any;
-    currentLocation: {latitude:string, longitude:string, timestamp?: Date};
+    currentLocation: {latitude:string, longitude:string, timestamp?: Date} = null;
 
     // Foreground Tracking
     foreGroundOptions = {
@@ -71,6 +71,9 @@ export class GeolocationService {
     }
 
     eventPostGeoloc() {
+        if (this.currentLocation == null) {
+            return;
+        }
         let headers = new Headers();
         headers.append('Content-Type', 'application/json');
 

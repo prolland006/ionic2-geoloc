@@ -1,5 +1,6 @@
 <ion-content padding class="noname-content">
 
-  <div #map id="map"></div>
+  <div *ngIf="this.map == null">Welcome ! You should move to have the map, please wait...</div>
+  <div #_map id="map"></div>
 
 </ion-content>

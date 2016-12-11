@@ -19,7 +19,7 @@ const MAX_NB_MARKER = 100;
 
 export class nonamePage {
 
-  @ViewChild('map') mapElement: ElementRef;
+  @ViewChild('_map') mapElement: ElementRef;
   map: any = null;
 
   public title: string = 'Noname';
@@ -77,6 +77,7 @@ export class nonamePage {
     }
     if (this.map == null) {
       this.map = new google.maps.Map(this.mapElement.nativeElement, mapOptions);
+      this.trace.info('google map started');
     }
     this.addMarker(location, color);
     this.map.setCenter(latLng);
