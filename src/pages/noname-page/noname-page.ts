@@ -7,6 +7,7 @@ import Timer = NodeJS.Timer;
 import {log } from "../../services/log";
 import {ConnectivityService} from "../../services/connectivity-service";
 import {GeolocationService} from "../../services/geolocation-service";
+import {Insomnia} from "@ionic-native/insomnia";
 
 declare let google;
 
@@ -26,6 +27,7 @@ export class nonamePage {
   latitude: string = '';
   longitude: string = '';
   markerList: any[];
+  private insomnia: Insomnia;
 
   constructor(public navCtrl: NavController, private platform: Platform, public trace: log,
               public connectivityService: ConnectivityService, events: Events, renderer: Renderer,
@@ -33,6 +35,16 @@ export class nonamePage {
 
     this.trace.info('create nonamePage');
     this.markerList = new Array(MAX_NB_MARKER);
+
+      this.platform.ready().then(() => {
+          this.insomnia.keepAwake()
+              .then(
+        () => console.log('insomnia success'),
+        () => console.log('insomnia error')
+              );
+      }).catch(err => {
+          this.trace.error('nonamePage', 'constructor', `error:${err}`);
+      });
 
     renderer.listenGlobal('document', 'online', (event) => {
       this.trace.info('you are online');

@@ -21,6 +21,7 @@ export class GeolocationService {
     postGeolocInterval: Timer;
     public watch: any;
     currentLocation: {latitude:string, longitude:string, timestamp?: Date} = null;
+    lastCurrentLocation: {latitude:string, longitude:string, timestamp?: Date} = null;
 
     // Foreground Tracking
     foreGroundOptions = {
@@ -33,15 +34,12 @@ export class GeolocationService {
     constructor(private http: Http, private platform: Platform, public trace: log, private events: Events,
                 public connectivityService: ConnectivityService) {
 
-        if (this.platform.is('android')) {
-            this.platform.ready().then(() => {
-                this.startTracking();
+        this.platform.ready().then(() => {
+            this.startTracking();
 
-            }).catch(err => {
-                this.trace.error('GeolocationService', 'constructor', `error:${err}`);
-            });
-
-        }
+        }).catch(err => {
+            this.trace.error('GeolocationService', 'constructor', `error:${err}`);
+        });
     }
 
     foreGroundWatchPosition() {
@@ -71,9 +69,15 @@ export class GeolocationService {
     }
 
     eventPostGeoloc() {
-        if (this.currentLocation == null) {
+        if ((this.currentLocation == null)
+            ||  ((this.lastCurrentLocation != null)
+                && (this.lastCurrentLocation.longitude == this.currentLocation.longitude)  //not the same location
+                && (this.lastCurrentLocation.latitude == this.currentLocation.latitude))
+            )
+        {
             return;
         }
+        this.lastCurrentLocation = {longitude: this.currentLocation.longitude, latitude: this.currentLocation.latitude};
         let headers = new Headers();
         headers.append('Content-Type', 'application/json');
 

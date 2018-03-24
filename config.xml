@@ -38,4 +38,5 @@
     <plugin name="cordova-plugin-background-mode" spec="https://github.com/katzer/cordova-plugin-background-mode.git" />
     <plugin name="cordova-plugin-crosswalk-webview" spec="~2.1.0" />
     <engine name="android" spec="~5.2.2" />
+    <plugin name="cordova-plugin-insomnia" spec="~4.3.0" />
 </widget>
